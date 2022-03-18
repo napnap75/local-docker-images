@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  front:
+    image: napnap75/mailu_nginx:${VERSION}
+    build:
+      context: Mailu-${VERSION}/core/nginx
+      args:
+        VERSION: ${VERSION}
+
+  resolver:
+    image: napnap75/mailu_unbound:${VERSION}
+    build:
+      context: Mailu-${VERSION}/optional/unbound
+      args:
+        VERSION: ${VERSION}
+
+  imap:
+    image: napnap75/mailu_dovecot:${VERSION}
+    build:
+      context: Mailu-${VERSION}/core/dovecot
+      args:
+        VERSION: ${VERSION}
+
+  smtp:
+    image: napnap75/mailu_postfix:${VERSION}
+    build:
+      context: Mailu-${VERSION}/core/postfix
+      args:
+        VERSION: ${VERSION}
+
+  antispam:
+    image: napnap75/mailu_rspamd:${VERSION}
+    build:
+      context: Mailu-${VERSION}/core/rspamd
+      args:
+        VERSION: ${VERSION}
+
+  antivirus:
+    image: napnap75/mailu_clamav:${VERSION}
+    build:
+      context: Mailu-${VERSION}/optional/clamav
+      args:
+        VERSION: ${VERSION}
+
+  traefik-certdumper:
+    image: napnap75/mailu_traefik-certdumper:${VERSION}
+    build:
+      context: Mailu-${VERSION}/optional/traefik-certdumper
+      args:
+        VERSION: ${VERSION}
+
+  admin:
+    image: napnap75/mailu_admin:${VERSION}
+    build:
+      context: Mailu-${VERSION}/core/admin
+      args:
+        VERSION: ${VERSION}
+
+  fetchmail:
+    image: napnap75/mailu_fetchmail:${VERSION}
+    build:
+      context: Mailu-${VERSION}/optional/fetchmail
+      args:
+        VERSION: ${VERSION}
