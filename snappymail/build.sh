@@ -1,12 +1,15 @@
-#!/bin/bash
-
-set -e
-
-VERSION=$(curl -s https://api.github.com/repos/the-djmaze/snappymail/releases/latest | jq -r '.name|ltrimstr("v")')
-git clone -b v${VERSION} https://github.com/the-djmaze/snappymail
-cd snappymail/.docker/release
-curl -o snappymail.zip -L "https://api.github.com/repos/the-djmaze/snappymail/zipball/v${VERSION}"
+#!/bin/bash -e
+if [ "$1" = "" ]; then
+	VERSION=$(curl -s https://api.github.com/repos/the-djmaze/snappymail/releases/latest | jq -r '.name|ltrimstr("v")')
+else
+	VERSION=$1
+fi
+curl -o snappymail-${VERSION}.zip -L "https://api.github.com/repos/the-djmaze/snappymail/zipball/v${VERSION}"
+unzip snappymail-${VERSION}.zip
+mv snappymail-${VERSION}.zip the-djmaze-snappymail-*/.docker/release
+cd the-djmaze-snappymail-*/.docker/release
+curl -o snappymail-${VERSION}.zip -L "https://github.com/the-djmaze/snappymail/releases/download/v${VERSION}/snappymail-${VERSION}.zip"
 sed -i "s/x86_64-linux-gnu/aarch64-linux-gnu/g" Dockerfile
-docker build --build-arg FILES_ZIP=snappymail.zip -t napnap75/snappymail:${VERSION} .
+docker build --no-cache --build-arg FILES_ZIP=snappymail-${VERSION}.zip -t napnap75/snappymail:${VERSION} .
 cd ../../..
-rm -fr snappymail
+rm -fr the-djmaze-snappymail-*
